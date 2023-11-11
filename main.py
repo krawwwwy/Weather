@@ -19,7 +19,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('''The /weather command shows the weather at a given time,
 Command /forecast - shows the forecast for tomorrow
-Command /weeklyforecast - shows the forecast for the week
+Command /sixdaysforecast - shows the forecast for the week
 Command /setcity - set the city for the weather forecast''')
 
 async def set_city(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -32,7 +32,7 @@ async def set_city(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text('Use the command like this: /setcity <сity>')
 
 
-async def weekly_forecast_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def six_days_forecast_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
 
     if user_id not in user_cities:
@@ -51,7 +51,6 @@ async def weekly_forecast_command(update: Update, context: ContextTypes.DEFAULT_
     weather_data = response.json()
 
     daily_forecast = {}
-
     for item in weather_data['list']:
         date = datetime.strptime(item['dt_txt'], '%Y-%m-%d %H:%M:%S')
         day = date.strftime('%A')
@@ -64,7 +63,7 @@ async def weekly_forecast_command(update: Update, context: ContextTypes.DEFAULT_
         daily_forecast[day]['temperatures'].append(temperature)
         daily_forecast[day]['descriptions'].append(description)
 
-    message_text = f'Weekly weather forecast for {user_cities[user_id]}:\n\n'
+    message_text = f'Six days weather forecast for {user_cities[user_id]}:\n\n'
 
     for day, data in daily_forecast.items():
         avg_temperature = sum(data['temperatures']) / len(data['temperatures'])
@@ -140,10 +139,9 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('help', help_command))
     app.add_handler(CommandHandler('weather', weather_command))
     app.add_handler(CommandHandler('forecast', forecast_command))
-    app.add_handler(CommandHandler('weeklyforecast', weekly_forecast_command))
+    app.add_handler(CommandHandler('sixdaysforecast', six_days_forecast_command))
     app.add_handler(CommandHandler('setcity', set_city))
 
     app.add_error_handler(error_message)
 
     app.run_polling()
-
